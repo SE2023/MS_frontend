@@ -11,13 +11,13 @@
       "
     >
       <Form layout="inline" autocomplete="off" class="bar-form">
-        <FormItem label="name" name="name" style="margin-bottom: 15px">
+        <FormItem label="Name" name="name" style="margin-bottom: 15px">
           <Input v-model:value="formState.name" placeholder="Please input" />
         </FormItem>
-        <FormItem label="telephone" name="telephone" style="margin-bottom: 15px">
-          <Input v-model:value="formState.telephone" placeholder="Please input" />
+        <FormItem label="Email" name="email" style="margin-bottom: 15px">
+          <Input v-model:value="formState.email" placeholder="Please input" />
         </FormItem>
-        <FormItem label="state" name="state" style="margin-bottom: 15px">
+        <FormItem label="Join Date" name="joinDate" style="margin-bottom: 15px">
           <Select
             v-model:value="formState.joinDate"
             placeholder="Please select"
@@ -120,12 +120,12 @@
 
   interface FormState {
     name: string
-    telephone: string
+    email: string
     joinDate: any
   }
   const formState = reactive<FormState>({
     name: '',
-    telephone: '',
+    email: '',
     joinDate: null,
   })
 
@@ -136,8 +136,8 @@
       align: 'center',
     },
     {
-      title: 'Telephone',
-      dataIndex: 'telephone',
+      title: 'Email',
+      dataIndex: 'email',
       align: 'center',
     },
     {
@@ -162,21 +162,21 @@
     {
       key: '1',
       name: 'San Zhang',
-      telephone: '12345678901',
+      email: '12345678901',
       registerDate: '2021-01-01',
       discount: '×1',
     },
     {
       key: '2',
       name: 'Si Li',
-      telephone: '12345678902',
+      email: '12345678902',
       registerDate: '2021-01-02',
       discount: '×1',
     },
     {
       key: '3',
       name: 'Wu Wang',
-      telephone: '12345678903',
+      email: '12345678903',
       registerDate: '2021-01-03',
       discount: '×0.8 (Before 2021-01-31)',
     },

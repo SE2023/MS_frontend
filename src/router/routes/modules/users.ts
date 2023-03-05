@@ -30,6 +30,14 @@ const users: AppRouteModule = {
         title: 'Members',
       },
     },
+    {
+      path: 'staff',
+      name: 'Staff',
+      component: () => import('/@/views/users/staff/index.vue'),
+      meta: {
+        title: 'Staff',
+      },
+    },
   ],
 }
 

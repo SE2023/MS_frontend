@@ -11,11 +11,18 @@
       "
     >
       <Form layout="inline" autocomplete="off" class="bar-form">
-        <FormItem label="Name" name="name">
+        <FormItem label="Name" name="name" style="margin-bottom: 15px">
           <Input v-model:value="formState.name" placeholder="Please input" />
         </FormItem>
-        <FormItem label="State" name="state">
-          <Select v-model:value="formState.state" placeholder="Please select" style="width: 200px">
+        <FormItem label="Email" name="email" style="margin-bottom: 15px">
+          <Input v-model:value="formState.email" placeholder="Please input" />
+        </FormItem>
+        <FormItem label="Join Date" name="joinDate" style="margin-bottom: 15px">
+          <Select
+            v-model:value="formState.joinDate"
+            placeholder="Please select"
+            style="width: 200px"
+          >
             <Select.Option value="1">1</Select.Option>
             <Select.Option value="2">2</Select.Option>
           </Select>
@@ -81,9 +88,8 @@
                 position: relative;
                 top: 4px;
               "
-              >Facilities</span
+              >Staff</span
             >
-            <Button type="primary" style="margin-left: auto">Add</Button>
           </div>
         </template>
       </Table>
@@ -93,63 +99,39 @@
 
 <script lang="ts" setup>
   import { reactive } from 'vue'
-  import { Form, FormItem, Input, Select, Button, Table, Tag, Tooltip } from 'ant-design-vue'
-  import type { TableColumnType } from 'ant-design-vue'
+  import { Form, FormItem, Input, Select, Button, Table, Tooltip, Tag } from 'ant-design-vue'
   import { FormOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 
   interface FormState {
     name: string
-    state: any
+    email: string
+    joinDate: any
   }
   const formState = reactive<FormState>({
     name: '',
-    state: null,
+    email: '',
+    joinDate: null,
   })
 
-  const columns: TableColumnType[] = [
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      align: 'center',
-      customCell: (_, index) => {
-        if (index === 2) {
-          return { rowSpan: 4 }
-        }
-        // These 3 are merged into above cell
-        if (index === 3) {
-          return { rowSpan: 0 }
-        }
-        if (index === 4) {
-          return { rowSpan: 0 }
-        }
-        if (index === 5) {
-          return { rowSpan: 0 }
-        }
-      },
-    },
+  const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
       align: 'center',
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
+      title: 'Email',
+      dataIndex: 'email',
       align: 'center',
     },
     {
-      title: 'Capacity',
-      dataIndex: 'capacity',
+      title: 'Password',
+      dataIndex: 'password',
       align: 'center',
     },
     {
-      title: 'Contact',
-      dataIndex: 'contact',
-      align: 'center',
-    },
-    {
-      title: 'Telephone',
-      dataIndex: 'telephone',
+      title: 'Join Date',
+      dataIndex: 'joinDate',
       align: 'center',
     },
     {
@@ -163,66 +145,24 @@
   const data = [
     {
       key: '1',
-      type: 'Swimming Pool',
-      name: 'Swimming pool1',
-      status: 'open',
-      capacity: '30/32',
-      contact: 'John',
-      telephone: '12345678911',
+      name: 'San Zhang',
+      email: '12345678901',
+      password: 'abcdefg123',
+      joinDate: '2021-01-01',
     },
     {
-      key: '2',
-      type: 'Fitness room',
-      name: 'Fitness room1',
-      status: 'open',
-      capacity: '12/25',
-      contact: 'John',
-      telephone: '12345678911',
+      key: '1',
+      name: 'San Zhang',
+      email: '12345678901',
+      password: 'abcdefg123',
+      joinDate: '2021-01-01',
     },
     {
-      key: '3',
-      type: 'Squash court',
-      name: 'Squash court1',
-      status: 'open',
-      capacity: '4/4',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-    {
-      key: '4',
-      type: 'Squash court',
-      name: 'Squash court2',
-      status: 'open',
-      capacity: '4/4',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-    {
-      key: '5',
-      type: 'Squash court',
-      name: 'Squash court3',
-      status: 'open',
-      capacity: '4/4',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-    {
-      key: '6',
-      type: 'Squash court',
-      name: 'Squash court4',
-      status: 'open',
-      capacity: '4/4',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-    {
-      key: '7',
-      type: 'Sports hall',
-      name: 'Sports hall',
-      status: 'close',
-      capacity: '0/20',
-      contact: 'John',
-      telephone: '12345678911',
+      key: '1',
+      name: 'San Zhang',
+      email: '12345678901',
+      password: 'abcdefg123',
+      joinDate: '2021-01-01',
     },
   ]
 </script>

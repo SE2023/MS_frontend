@@ -11,15 +11,15 @@
       "
     >
       <Form layout="inline" autocomplete="off" class="bar-form">
-        <FormItem label="name" name="name" style="margin-bottom: 15px">
+        <FormItem label="Name" name="name" style="margin-bottom: 15px">
           <Input v-model:value="formState.name" placeholder="Please input" />
         </FormItem>
-        <FormItem label="telephone" name="telephone" style="margin-bottom: 15px">
+        <FormItem label="Telephone" name="telephone" style="margin-bottom: 15px">
           <Input v-model:value="formState.telephone" placeholder="Please input" />
         </FormItem>
-        <FormItem label="state" name="state" style="margin-bottom: 15px">
+        <FormItem label="Booking Time" name="bookingTime" style="margin-bottom: 15px">
           <Select
-            v-model:value="formState.joinDate"
+            v-model:value="formState.bookingTime"
             placeholder="Please select"
             style="width: 200px"
           >
@@ -27,10 +27,10 @@
             <Select.Option value="2">2</Select.Option>
           </Select>
         </FormItem>
-        <FormItem label="facility" name="facility" style="margin-bottom: 15px">
+        <FormItem label="Facility" name="facility" style="margin-bottom: 15px">
           <Input v-model:value="formState.facility" placeholder="Please input" />
         </FormItem>
-        <FormItem label="activity" name="activity" style="margin-bottom: 15px">
+        <FormItem label="Activity" name="activity" style="margin-bottom: 15px">
           <Input v-model:value="formState.activity" placeholder="Please input" />
         </FormItem>
       </Form>
@@ -98,14 +98,14 @@
   interface FormState {
     name: string
     telephone: string
-    joinDate: any
+    bookingTime: any
     facility: string
     activity: string
   }
   const formState = reactive<FormState>({
     name: '',
     telephone: '',
-    joinDate: null,
+    bookingTime: null,
     facility: '',
     activity: '',
   })
