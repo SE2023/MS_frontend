@@ -75,6 +75,7 @@ export default {
     // notify
     loginSuccessTitle: '登录成功',
     loginSuccessDesc: '欢迎回来',
+    registerSuccessTitle: '注册成功',
 
     // placeholder
     accountPlaceholder: '请输入账号',
@@ -84,11 +85,11 @@ export default {
     policyPlaceholder: '勾选后才能注册',
     diffPwd: '两次输入密码不一致',
 
-    userName: '账号',
+    userName: '用户名',
     password: '密码',
     confirmPassword: '确认密码',
     email: '邮箱',
-    smsCode: '短信验证码',
+    smsCode: '验证码',
     mobile: '手机号码',
   },
 }
