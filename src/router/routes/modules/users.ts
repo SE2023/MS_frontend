@@ -1,6 +1,7 @@
 import type { AppRouteModule } from '/@/router/types'
 
 import { LAYOUT } from '/@/router/constant'
+import { RoleEnum } from '/@/enums/roleEnum'
 
 const users: AppRouteModule = {
   path: '/users',
@@ -36,6 +37,7 @@ const users: AppRouteModule = {
       component: () => import('/@/views/users/staff/index.vue'),
       meta: {
         title: 'Staff',
+        roles: [RoleEnum.MANAGER],
       },
     },
   ],

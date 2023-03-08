@@ -78,6 +78,7 @@
   import { useUserStore } from '/@/store/modules/user'
   import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin'
   import { useDesign } from '/@/hooks/web/useDesign'
+  import { loginApi } from '/@/api/sys/user'
   //import { onKeyStroke } from '@vueuse/core';
 
   const ACol = Col
@@ -97,8 +98,8 @@
   const rememberMe = ref(false)
 
   const formData = reactive({
-    account: 'vben',
-    password: '123456',
+    account: null,
+    password: null,
   })
 
   const { validForm } = useFormValid(formRef)
@@ -115,12 +116,12 @@
       const userInfo = await userStore.login({
         password: data.password,
         username: data.account,
-        mode: 'none', //不要默认的错误提示
       })
+      console.log(userInfo)
       if (userInfo) {
         notification.success({
           message: t('sys.login.loginSuccessTitle'),
-          description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.realName}`,
+          description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.username}`,
           duration: 3,
         })
       }
