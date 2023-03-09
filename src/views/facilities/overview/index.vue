@@ -47,7 +47,7 @@
             </Tag>
           </template>
           <template v-if="column.key === 'operation'">
-            <Tooltip>
+            <Tooltip @click="editFacility">
               <template #title>
                 <span>Edit</span>
               </template>
@@ -63,7 +63,7 @@
               "
               >|</span
             >
-            <Tooltip>
+            <Tooltip @click="deleteFacility">
               <template #title>
                 <span>Delete</span>
               </template>
@@ -83,7 +83,7 @@
               "
               >Facilities</span
             >
-            <Button type="primary" style="margin-left: auto">Add</Button>
+            <Button type="primary" style="margin-left: auto" @click="addFacility">Add</Button>
           </div>
         </template>
       </Table>
@@ -92,10 +92,16 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive } from 'vue'
+  import { onMounted, reactive, ref } from 'vue'
   import { Form, FormItem, Input, Select, Button, Table, Tag, Tooltip } from 'ant-design-vue'
   import type { TableColumnType } from 'ant-design-vue'
   import { FormOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+
+  import { getFacilityList } from '/@/api/sys/facility'
+  import { permissionVerify } from '/@/utils/auth/index'
+  import { notification } from 'ant-design-vue/es'
+  import { useI18n } from '/@/hooks/web/useI18n'
+  const { t } = useI18n()
 
   interface FormState {
     name: string
@@ -106,26 +112,31 @@
     state: null,
   })
 
+  // the number of each type
+  let typeNum: any = []
+
+  // customCellRuleFunction
+  const customCellRuleFunction = (typeNum: any) => {
+    return (_, index: any) => {
+      for (let i = 0; i < typeNum.length; i++) {
+        if (index === typeNum[i].index) {
+          return { rowSpan: typeNum[i].num }
+        }
+        for (let j = 0; j < typeNum[i].num - 1; j++) {
+          if (index === typeNum[i].index + j + 1) {
+            return { rowSpan: 0 }
+          }
+        }
+      }
+    }
+  }
+
   const columns: TableColumnType[] = [
     {
       title: 'Type',
       dataIndex: 'type',
       align: 'center',
-      customCell: (_, index) => {
-        if (index === 2) {
-          return { rowSpan: 4 }
-        }
-        // These 3 are merged into above cell
-        if (index === 3) {
-          return { rowSpan: 0 }
-        }
-        if (index === 4) {
-          return { rowSpan: 0 }
-        }
-        if (index === 5) {
-          return { rowSpan: 0 }
-        }
-      },
+      customCell: customCellRuleFunction(typeNum),
     },
     {
       title: 'Name',
@@ -160,71 +171,83 @@
     },
   ]
 
-  const data = [
-    {
-      key: '1',
-      type: 'Swimming Pool',
-      name: 'Swimming pool1',
-      status: 'open',
-      capacity: '30/32',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-    {
-      key: '2',
-      type: 'Fitness room',
-      name: 'Fitness room1',
-      status: 'open',
-      capacity: '12/25',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-    {
-      key: '3',
-      type: 'Squash court',
-      name: 'Squash court1',
-      status: 'open',
-      capacity: '4/4',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-    {
-      key: '4',
-      type: 'Squash court',
-      name: 'Squash court2',
-      status: 'open',
-      capacity: '4/4',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-    {
-      key: '5',
-      type: 'Squash court',
-      name: 'Squash court3',
-      status: 'open',
-      capacity: '4/4',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-    {
-      key: '6',
-      type: 'Squash court',
-      name: 'Squash court4',
-      status: 'open',
-      capacity: '4/4',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-    {
-      key: '7',
-      type: 'Sports hall',
-      name: 'Sports hall',
-      status: 'close',
-      capacity: '0/20',
-      contact: 'John',
-      telephone: '12345678911',
-    },
-  ]
+  const data: any = ref([])
+
+  onMounted(async () => {
+    await getFacilityList().then((res) => {
+      for (let i = 0; i < res.length; i++) {
+        data.value.push({
+          key: res[i].id,
+          type: res[i].type,
+          name: res[i].name,
+          status: res[i].status,
+          capacity: res[i].capacity,
+          contact: res[i].contact,
+          telephone: res[i].telephone,
+        })
+      }
+      // sort by type
+      data.value.sort((a: any, b: any) => {
+        return a.type.localeCompare(b.type)
+      })
+      // update the number of each type
+      for (let i = 0; i < data.value.length; i++) {
+        if (i === 0) {
+          typeNum.push({
+            type: data.value[i].type,
+            num: 1,
+            index: i,
+          })
+        } else {
+          if (data.value[i].type === data.value[i - 1].type) {
+            typeNum[typeNum.length - 1].num++
+          } else {
+            typeNum.push({
+              type: data.value[i].type,
+              num: 1,
+              index: i,
+            })
+          }
+        }
+      }
+    })
+  })
+
+  // add facility
+  const addFacility = async () => {
+    if (!(await permissionVerify())) {
+      notification.error({
+        message: t('sys.api.errorTip'),
+        description: t('sys.api.permissionError'),
+      })
+      return
+    }
+    console.log('add facility')
+  }
+
+  // edit facility
+  const editFacility = async () => {
+    if (!(await permissionVerify())) {
+      notification.error({
+        message: t('sys.api.errorTip'),
+        description: t('sys.api.permissionError'),
+      })
+      return
+    }
+    console.log('edit facility')
+  }
+
+  // delete facility
+  const deleteFacility = async () => {
+    if (!(await permissionVerify())) {
+      notification.error({
+        message: t('sys.api.errorTip'),
+        description: t('sys.api.permissionError'),
+      })
+      return
+    }
+    console.log('delete facility')
+  }
 </script>
 
 <style scoped>

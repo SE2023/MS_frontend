@@ -21,7 +21,7 @@
             </Tag>
           </template>
           <template v-if="column.key === 'operation'">
-            <Tooltip>
+            <Tooltip @click="editActivity">
               <template #title>
                 <span>Edit</span>
               </template>
@@ -37,7 +37,7 @@
               "
               >|</span
             >
-            <Tooltip>
+            <Tooltip @click="deleteActivity">
               <template #title>
                 <span>Delete</span>
               </template>
@@ -57,7 +57,7 @@
               "
               >Activities</span
             >
-            <Button type="primary" style="margin-left: auto">Add</Button>
+            <Button type="primary" style="margin-left: auto" @click="addActivity">Add</Button>
           </div>
         </template>
       </Table>
@@ -69,6 +69,10 @@
   import { Button, Table, Tag, Tooltip } from 'ant-design-vue'
   import type { TableColumnType } from 'ant-design-vue'
   import { FormOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+  import { permissionVerify } from '/@/utils/auth/index'
+  import { notification } from 'ant-design-vue/es'
+  import { useI18n } from '/@/hooks/web/useI18n'
+  const { t } = useI18n()
 
   const columns: TableColumnType[] = [
     {
@@ -166,6 +170,39 @@
       price: '$20/hour',
     },
   ]
+
+  // add activity
+  const addActivity = async () => {
+    if (!(await permissionVerify())) {
+      notification.error({
+        message: t('sys.api.errorTip'),
+        description: t('sys.api.permissionError'),
+      })
+      return
+    }
+  }
+
+  // edit activity
+  const editActivity = async () => {
+    if (!(await permissionVerify())) {
+      notification.error({
+        message: t('sys.api.errorTip'),
+        description: t('sys.api.permissionError'),
+      })
+      return
+    }
+  }
+
+  // delete activity
+  const deleteActivity = async () => {
+    if (!(await permissionVerify())) {
+      notification.error({
+        message: t('sys.api.errorTip'),
+        description: t('sys.api.permissionError'),
+      })
+      return
+    }
+  }
 </script>
 
 <style scoped>

@@ -1,6 +1,7 @@
 export default {
   api: {
     operationFailed: 'Operation failed',
+    permissionError: "You don't have permission",
     errorTip: 'Error Tip',
     errorMessage: 'The operation failed, the system is abnormal!',
     timeoutMessage: 'Login timed out, please log in again!',
