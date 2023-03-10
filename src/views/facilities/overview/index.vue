@@ -11,19 +11,16 @@
       "
     >
       <Form layout="inline" autocomplete="off" class="bar-form">
-        <FormItem label="Name" name="name">
-          <Input v-model:value="formState.name" placeholder="Please input" />
-        </FormItem>
         <FormItem label="State" name="state">
           <Select v-model:value="formState.state" placeholder="Please select" style="width: 200px">
-            <Select.Option value="1">1</Select.Option>
-            <Select.Option value="2">2</Select.Option>
+            <Select.Option value="open">open</Select.Option>
+            <Select.Option value="close">close</Select.Option>
           </Select>
         </FormItem>
       </Form>
       <div class="bar-buttons">
-        <Button>Reset</Button>
-        <Button type="primary">Search</Button>
+        <Button @click="toReset">Reset</Button>
+        <Button type="primary" @click="toFilter">Filter</Button>
       </div>
     </div>
     <div
@@ -93,7 +90,7 @@
 
 <script lang="ts" setup>
   import { onMounted, reactive, ref } from 'vue'
-  import { Form, FormItem, Input, Select, Button, Table, Tag, Tooltip } from 'ant-design-vue'
+  import { Form, FormItem, Select, Button, Table, Tag, Tooltip } from 'ant-design-vue'
   import type { TableColumnType } from 'ant-design-vue'
   import { FormOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 
@@ -104,11 +101,9 @@
   const { t } = useI18n()
 
   interface FormState {
-    name: string
     state: any
   }
   const formState = reactive<FormState>({
-    name: '',
     state: null,
   })
 
@@ -173,7 +168,33 @@
 
   const data: any = ref([])
 
-  onMounted(async () => {
+  // update the number of each type
+  const updateTypeNum = () => {
+    typeNum.splice(0, typeNum.length)
+    let num = 1
+    for (let i = 0; i < data.value.length; i++) {
+      if (i === 0) {
+        typeNum.push({
+          index: i,
+          num: num,
+        })
+      } else {
+        if (data.value[i].type === data.value[i - 1].type) {
+          num++
+          typeNum[typeNum.length - 1].num = num
+        } else {
+          num = 1
+          typeNum.push({
+            index: i,
+            num: num,
+          })
+        }
+      }
+    }
+  }
+
+  const initFacilityList = async () => {
+    data.value.splice(0, data.value.length)
     await getFacilityList().then((res) => {
       for (let i = 0; i < res.length; i++) {
         data.value.push({
@@ -191,26 +212,12 @@
         return a.type.localeCompare(b.type)
       })
       // update the number of each type
-      for (let i = 0; i < data.value.length; i++) {
-        if (i === 0) {
-          typeNum.push({
-            type: data.value[i].type,
-            num: 1,
-            index: i,
-          })
-        } else {
-          if (data.value[i].type === data.value[i - 1].type) {
-            typeNum[typeNum.length - 1].num++
-          } else {
-            typeNum.push({
-              type: data.value[i].type,
-              num: 1,
-              index: i,
-            })
-          }
-        }
-      }
+      updateTypeNum()
     })
+  }
+
+  onMounted(async () => {
+    await initFacilityList()
   })
 
   // add facility
@@ -247,6 +254,31 @@
       return
     }
     console.log('delete facility')
+  }
+
+  // reset form
+  const toReset = async () => {
+    formState.state = null
+    await initFacilityList()
+  }
+
+  // filter
+  const toFilter = async () => {
+    await initFacilityList()
+    console.log(data.value)
+    // filter the data
+    for (let i = 0; i < data.value.length; i++) {
+      console.log('--')
+      console.log(data.value[i].status)
+      console.log(formState.state)
+      if (data.value[i].status !== formState.state) {
+        data.value.splice(i, 1)
+        i--
+      }
+    }
+    console.log(data.value)
+    // update the number of each type
+    updateTypeNum()
   }
 </script>
 

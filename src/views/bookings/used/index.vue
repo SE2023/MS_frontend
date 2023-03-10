@@ -14,8 +14,8 @@
         <FormItem label="Name" name="name" style="margin-bottom: 15px">
           <Input v-model:value="formState.name" placeholder="Please input" />
         </FormItem>
-        <FormItem label="Telephone" name="telephone" style="margin-bottom: 15px">
-          <Input v-model:value="formState.telephone" placeholder="Please input" />
+        <FormItem label="Email" name="email" style="margin-bottom: 15px">
+          <Input v-model:value="formState.email" placeholder="Please input" />
         </FormItem>
         <FormItem label="Booking Time" name="bookingTime" style="margin-bottom: 15px">
           <Select
@@ -97,14 +97,14 @@
 
   interface FormState {
     name: string
-    telephone: string
+    email: string
     bookingTime: any
     facility: string
     activity: string
   }
   const formState = reactive<FormState>({
     name: '',
-    telephone: '',
+    email: '',
     bookingTime: null,
     facility: '',
     activity: '',
@@ -117,8 +117,8 @@
       align: 'center',
     },
     {
-      title: 'Telephone',
-      dataIndex: 'telephone',
+      title: 'Email',
+      dataIndex: 'email',
       align: 'center',
     },
     {
@@ -153,7 +153,7 @@
     {
       key: '1',
       name: 'San Zhang',
-      telephone: '12345678901',
+      email: '12345678901',
       facility: 'Swimming pool',
       activity: 'General use',
       bookingTime: '2021-01-01 12:00 - 2021-01-01 13:00',
@@ -162,7 +162,7 @@
     {
       key: '2',
       name: 'Si Li',
-      telephone: '12345678901',
+      email: '12345678901',
       facility: 'Swimming pool',
       activity: 'General use',
       bookingTime: '2021-01-01 12:00 - 2021-01-01 13:00',
@@ -171,7 +171,7 @@
     {
       key: '3',
       name: 'Wu Wang',
-      telephone: '12345678901',
+      email: '12345678901',
       facility: 'Swimming pool',
       activity: 'General use',
       bookingTime: '2021-01-01 12:00 - 2021-01-01 13:00',
