@@ -30,7 +30,7 @@
       </Form>
       <div class="bar-buttons">
         <Button>Reset</Button>
-        <Button type="primary">Search</Button>
+        <Button type="primary">Filter</Button>
       </div>
     </div>
     <div
