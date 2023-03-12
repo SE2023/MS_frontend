@@ -2,27 +2,20 @@
   <template v-if="getShow">
     <LoginFormTitle class="enter-x" />
     <Form class="p-4 enter-x" :model="formData" :rules="getFormRules" ref="formRef">
-      <FormItem name="account" class="enter-x">
+      <FormItem name="username" class="enter-x">
         <Input
           class="fix-auto-fill"
           size="large"
-          v-model:value="formData.account"
+          v-model:value="formData.username"
           :placeholder="t('sys.login.userName')"
         />
       </FormItem>
-      <FormItem name="mobile" class="enter-x">
-        <Input
-          size="large"
-          v-model:value="formData.mobile"
-          :placeholder="t('sys.login.mobile')"
-          class="fix-auto-fill"
-        />
-      </FormItem>
-      <FormItem name="sms" class="enter-x">
+      <FormItem name="confirmCode" class="enter-x">
         <CountdownInput
           size="large"
           class="fix-auto-fill"
-          v-model:value="formData.sms"
+          :sendCodeApi="sendCode"
+          v-model:value="formData.confirmCode"
           :placeholder="t('sys.login.smsCode')"
         />
       </FormItem>
@@ -68,10 +61,11 @@
 <script lang="ts" setup>
   import { reactive, ref, unref, computed } from 'vue'
   import LoginFormTitle from './LoginFormTitle.vue'
-  import { Form, Input, Button, Checkbox } from 'ant-design-vue'
+  import { Form, Input, Button, Checkbox, notification } from 'ant-design-vue'
   import { StrengthMeter } from '/@/components/StrengthMeter'
   import { CountdownInput } from '/@/components/CountDown'
   import { useI18n } from '/@/hooks/web/useI18n'
+  import { getSMSCode, registerApi } from '/@/api/sys/user'
   import { useLoginState, useFormRules, useFormValid, LoginStateEnum } from './useLogin'
 
   const FormItem = Form.Item
@@ -83,11 +77,10 @@
   const loading = ref(false)
 
   const formData = reactive({
-    account: '',
+    username: '',
     password: '',
     confirmPassword: '',
-    mobile: '',
-    sms: '',
+    confirmCode: '',
     policy: false,
   })
 
@@ -99,6 +92,20 @@
   async function handleRegister() {
     const data = await validForm()
     if (!data) return
-    console.log(data)
+    const res = await registerApi(data)
+    if (res) {
+      notification.success({
+        message: t('sys.login.registerSuccessTitle'),
+        duration: 3,
+      })
+    }
+  }
+
+  async function sendCode() {
+    console.log('username: ', formData.username)
+    const res = await getSMSCode()
+
+    console.log(res)
+    return true
   }
 </script>
