@@ -18,19 +18,20 @@
           <Input v-model:value="formState.email" placeholder="Please input" />
         </FormItem>
         <FormItem label="Join Date" name="joinDate" style="margin-bottom: 15px">
-          <Select
-            v-model:value="formState.joinDate"
-            placeholder="Please select"
-            style="width: 200px"
-          >
-            <Select.Option value="1">1</Select.Option>
-            <Select.Option value="2">2</Select.Option>
-          </Select>
+<!--          <Select-->
+<!--            v-model:value="formState.joinDate"-->
+<!--            placeholder="Please select"-->
+<!--            style="width: 200px"-->
+<!--          >-->
+<!--            <Select.Option value="1">1</Select.Option>-->
+<!--            <Select.Option value="2">2</Select.Option>-->
+<!--          </Select>-->
+          <DatePicker v-model:value="formState.joinDate" format="YYYY-MM-DD"></DatePicker>
         </FormItem>
       </Form>
       <div class="bar-buttons">
-        <Button>Reset</Button>
-        <Button type="primary">Filter</Button>
+        <Button @click="resetFilterOptions">Reset</Button>
+        <Button type="primary" @click="filter">Filter</Button>
       </div>
     </div>
     <div
@@ -43,7 +44,7 @@
         display: flex;
       "
     >
-      <Table style="width: 100%" :columns="columns" :data-source="data" bordered>
+      <Table style="width: 100%" :columns="columns" :data-source="dataToShow" bordered>
         <template #bodyCell="{ column, text }">
           <template v-if="column.dataIndex === 'status'">
             <Tag v-if="text === 'open'" color="success">
@@ -115,10 +116,11 @@
 
 <script lang="ts" setup>
   import { reactive, onMounted, ref } from 'vue'
-  import { Form, FormItem, Input, Select, Button, Table, Tooltip, Tag } from 'ant-design-vue'
+  import { Form, FormItem, Input, Button, Table, Tooltip, Tag, DatePicker } from 'ant-design-vue'
   import { FormOutlined, DeleteOutlined, MoneyCollectOutlined } from '@ant-design/icons-vue'
 
   import { getUserListByRole } from '/@/api/sys/user'
+  import { timestampToTime } from '/@/utils/dateUtil'
 
   interface FormState {
     name: string
@@ -162,6 +164,8 @@
 
   let data: any = ref([])
 
+  let dataToShow: any = ref([])
+
   onMounted(async () => {
     const res = await getUserListByRole('nonmembers')
     console.log(res)
@@ -174,7 +178,52 @@
         discount: '×1',
       })
     }
+    dataToShow.value.splice(0, dataToShow.value.length)
+    for (let i = 0; i < data.value.length; i++) {
+      dataToShow.value.push(data.value[i])
+    }
   })
+
+  const resetFilterOptions = () => {
+    formState.name = ''
+    formState.email = ''
+    formState.joinDate = null
+
+    dataToShow.value.splice(0, dataToShow.value.length)
+    for (let i = 0; i < data.value.length; i++) {
+      dataToShow.value.push(data.value[i])
+    }
+  }
+
+  const filter = () => {
+    dataToShow.value.splice(0, dataToShow.value.length)
+    for (let i = 0; i < data.value.length; i++) {
+      dataToShow.value.push(data.value[i])
+    }
+    let joinDate = timestampToTime(formState.joinDate)
+    for (let i = 0; i < dataToShow.value.length; i++) {
+      if (formState.name !== '') {
+        if (dataToShow.value[i].name !== formState.name) {
+          dataToShow.value.splice(i, 1)
+          i--
+          continue
+        }
+      }
+      if (formState.email !== '') {
+        if (dataToShow.value[i].email !== formState.email) {
+          dataToShow.value.splice(i, 1)
+          i--
+          continue
+        }
+      }
+      if (formState.joinDate !== null) {
+        if (dataToShow.value[i].registerDate !== joinDate) {
+          dataToShow.value.splice(i, 1)
+          i--
+        }
+      }
+    }
+  }
 </script>
 
 <style scoped>
