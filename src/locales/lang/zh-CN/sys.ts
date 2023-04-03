@@ -1,6 +1,7 @@
 export default {
   api: {
     operationFailed: '操作失败',
+    permissionError: '抱歉，你没有权限操作',
     errorTip: '错误提示',
     errorMessage: '操作失败,系统异常!',
     timeoutMessage: '登录超时,请重新登录!',

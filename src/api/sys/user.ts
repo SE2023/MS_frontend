@@ -66,6 +66,12 @@ export function getSMSCode() {
   })
 }
 
+export function getUserListByRole(role: String) {
+  return defHttp.get({
+    url: Api.GetUserInfo + '/' + role,
+  })
+}
+
 export function testRetry() {
   return defHttp.get(
     { url: Api.TestRetry },

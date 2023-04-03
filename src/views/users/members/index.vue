@@ -30,7 +30,7 @@
       </Form>
       <div class="bar-buttons">
         <Button>Reset</Button>
-        <Button type="primary">Search</Button>
+        <Button type="primary">Filter</Button>
       </div>
     </div>
     <div
@@ -117,9 +117,10 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive } from 'vue'
+  import { onMounted, reactive, ref } from 'vue'
   import { Form, FormItem, Input, Select, Button, Table, Tooltip, Tag } from 'ant-design-vue'
   import { FormOutlined, DeleteOutlined, MoneyCollectOutlined } from '@ant-design/icons-vue'
+  import { getUserListByRole } from '/@/api/sys/user'
 
   interface FormState {
     name: string
@@ -177,35 +178,53 @@
     },
   ]
 
-  const data = [
-    {
-      key: '1',
-      name: 'San Zhang',
-      email: '12345678901',
-      registerDate: '2021-01-01',
-      joinDate: '2021-01-01',
-      accountBalance: '500',
-      discount: '×0.8 (Before 2021-01-31)',
-    },
-    {
-      key: '2',
-      name: 'Si Li',
-      email: '12345678901',
-      registerDate: '2021-01-01',
-      joinDate: '2021-01-01',
-      accountBalance: '500',
-      discount: '×0.8 (Before 2021-01-31)',
-    },
-    {
-      key: '3',
-      name: 'Wu Wang',
-      email: '12345678901',
-      registerDate: '2021-01-01',
-      joinDate: '2021-01-01',
-      accountBalance: '500',
-      discount: '×0.8 (Before 2021-01-31)',
-    },
-  ]
+  // const data = [
+  //   {
+  //     key: '1',
+  //     name: 'San Zhang',
+  //     email: '12345678901',
+  //     registerDate: '2021-01-01',
+  //     joinDate: '2021-01-01',
+  //     accountBalance: '500',
+  //     discount: '×0.8 (Before 2021-01-31)',
+  //   },
+  //   {
+  //     key: '2',
+  //     name: 'Si Li',
+  //     email: '12345678901',
+  //     registerDate: '2021-01-01',
+  //     joinDate: '2021-01-01',
+  //     accountBalance: '500',
+  //     discount: '×0.8 (Before 2021-01-31)',
+  //   },
+  //   {
+  //     key: '3',
+  //     name: 'Wu Wang',
+  //     email: '12345678901',
+  //     registerDate: '2021-01-01',
+  //     joinDate: '2021-01-01',
+  //     accountBalance: '500',
+  //     discount: '×0.8 (Before 2021-01-31)',
+  //   },
+  // ]
+
+  let data: any = ref([])
+
+  onMounted(async () => {
+    const res = await getUserListByRole('members')
+    console.log(res)
+    for (let i = 0; i < res.length; i++) {
+      data.value.push({
+        key: i + 1,
+        name: res[i].username,
+        email: res[i].email,
+        registerDate: '2023-03-06',
+        joinDate: '2023-03-06',
+        accountBalance: '¥450',
+        discount: '×0.8 (Before 2021-01-31)',
+      })
+    }
+  })
 </script>
 
 <style scoped>

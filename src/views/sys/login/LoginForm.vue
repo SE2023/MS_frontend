@@ -78,15 +78,13 @@
   import { useUserStore } from '/@/store/modules/user'
   import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin'
   import { useDesign } from '/@/hooks/web/useDesign'
-  import { loginApi } from '/@/api/sys/user'
-  //import { onKeyStroke } from '@vueuse/core';
 
   const ACol = Col
   const ARow = Row
   const FormItem = Form.Item
   const InputPassword = Input.Password
   const { t } = useI18n()
-  const { notification, createErrorModal } = useMessage()
+  const { notification } = useMessage()
   const { prefixCls } = useDesign('login')
   const userStore = useUserStore()
 
@@ -126,11 +124,11 @@
         })
       }
     } catch (error) {
-      createErrorModal({
-        title: t('sys.api.errorTip'),
-        content: (error as unknown as Error).message || t('sys.api.networkExceptionMsg'),
-        getContainer: () => document.body.querySelector(`.${prefixCls}`) || document.body,
-      })
+      // createErrorModal({
+      //   title: t('sys.api.errorTip'),
+      //   content: (error as unknown as Error).message || t('sys.api.networkExceptionMsg'),
+      //   getContainer: () => document.body.querySelector(`.${prefixCls}`) || document.body,
+      // })
     } finally {
       loading.value = false
     }
