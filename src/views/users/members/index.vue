@@ -218,6 +218,9 @@
         key: i + 1,
         name: res[i].username,
         email: res[i].email,
+        registerDate: '2023-03-06',
+        joinDate: '2023-03-06',
+        accountBalance: '¥450',
         discount: '×0.8 (Before 2021-01-31)',
       })
     }

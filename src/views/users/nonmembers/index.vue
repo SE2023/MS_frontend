@@ -170,6 +170,7 @@
         key: i + 1,
         name: res[i].username,
         email: res[i].email,
+        registerDate: '2023-03-06',
         discount: '×1',
       })
     }

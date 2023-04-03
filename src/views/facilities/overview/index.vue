@@ -34,7 +34,7 @@
       "
     >
       <Table style="width: 100%" :columns="columns" :data-source="data" bordered>
-        <template #bodyCell="{ column, text }">
+        <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'status'">
             <Tag v-if="text === 'open'" color="success">
               {{ text }}
@@ -44,7 +44,7 @@
             </Tag>
           </template>
           <template v-if="column.key === 'operation'">
-            <Tooltip @click="editFacility">
+            <Tooltip @click="editFacility(record)">
               <template #title>
                 <span>Edit</span>
               </template>
@@ -60,12 +60,19 @@
               "
               >|</span
             >
-            <Tooltip @click="deleteFacility">
-              <template #title>
-                <span>Delete</span>
-              </template>
-              <DeleteOutlined style="color: rgb(221, 118, 115)" class="operation-buttons" />
-            </Tooltip>
+            <Popconfirm
+              title="Sure to delete?"
+              ok-text="Yes"
+              cancel-text="No"
+              @confirm="deleteFacilityAction(record.key)"
+            >
+              <Tooltip @click="deleteFacility">
+                <template #title>
+                  <span>Delete</span>
+                </template>
+                <DeleteOutlined style="color: rgb(221, 118, 115)" class="operation-buttons" />
+              </Tooltip>
+            </Popconfirm>
           </template>
         </template>
         <template #title>
@@ -85,16 +92,95 @@
         </template>
       </Table>
     </div>
+
+    <!-- Add a facility -->
+    <BasicModal
+      title="Add A Facility"
+      v-model:visible="addFacilityModalVisible"
+      @ok="addFacilityAction"
+    >
+      <Form :model="formFacility" :label-col="{ span: 5 }">
+        <FormItem label="Type" name="type" :rules="[{ required: true }]">
+          <Input v-model:value="formFacility.type" />
+        </FormItem>
+        <FormItem label="Name" name="name" :rules="[{ required: true }]">
+          <Input v-model:value="formFacility.name" />
+        </FormItem>
+        <FormItem label="Status" name="status" :rules="[{ required: true }]">
+          <Select v-model:value="formFacility.status" placeholder="Please select">
+            <Select.Option value="open">open</Select.Option>
+            <Select.Option value="close">close</Select.Option>
+          </Select>
+        </FormItem>
+        <FormItem label="Capacity" name="capacity" :rules="[{ required: true }]">
+          <Input v-model:value="formFacility.capacity" />
+        </FormItem>
+        <FormItem label="Contact" name="contact" :rules="[{ required: true }]">
+          <Input v-model:value="formFacility.contact" />
+        </FormItem>
+        <FormItem label="Telephone" name="telephone" :rules="[{ required: true }]">
+          <Input v-model:value="formFacility.telephone" />
+        </FormItem>
+      </Form>
+    </BasicModal>
+
+    <!-- Edit a facility -->
+    <BasicModal
+      title="Edit A Facility"
+      v-model:visible="editFacilityModalVisible"
+      @ok="editFacilityAction"
+    >
+      <Form :model="formFacility" :label-col="{ span: 5 }">
+        <FormItem label="Type" name="type" :rules="[{ required: true }]">
+          <Input v-model:value="formFacility.type" />
+        </FormItem>
+        <FormItem label="Name" name="name" :rules="[{ required: true }]">
+          <Input v-model:value="formFacility.name" />
+        </FormItem>
+        <FormItem label="Status" name="status" :rules="[{ required: true }]">
+          <Select v-model:value="formFacility.status" placeholder="Please select">
+            <Select.Option value="open">open</Select.Option>
+            <Select.Option value="close">close</Select.Option>
+          </Select>
+        </FormItem>
+        <FormItem label="Capacity" name="capacity" :rules="[{ required: true }]">
+          <Input v-model:value="formFacility.capacity" />
+        </FormItem>
+        <FormItem label="Contact" name="contact" :rules="[{ required: true }]">
+          <Input v-model:value="formFacility.contact" />
+        </FormItem>
+        <FormItem label="Telephone" name="telephone" :rules="[{ required: true }]">
+          <Input v-model:value="formFacility.telephone" />
+        </FormItem>
+      </Form>
+    </BasicModal>
   </div>
 </template>
 
 <script lang="ts" setup>
   import { onMounted, reactive, ref } from 'vue'
-  import { Form, FormItem, Select, Button, Table, Tag, Tooltip } from 'ant-design-vue'
+  import {
+    Form,
+    FormItem,
+    Select,
+    Button,
+    Table,
+    Tag,
+    Tooltip,
+    Input,
+    Popconfirm,
+  } from 'ant-design-vue'
   import type { TableColumnType } from 'ant-design-vue'
   import { FormOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 
-  import { getFacilityList } from '/@/api/sys/facility'
+  import { BasicModal } from '/@/components/Modal'
+
+  import {
+    getFacilityListApi,
+    addFacilityApi,
+    deleteFacilityApi,
+    editFacilityApi,
+  } from '/@/api/sys/facility'
   import { permissionVerify } from '/@/utils/auth/index'
   import { notification } from 'ant-design-vue/es'
   import { useI18n } from '/@/hooks/web/useI18n'
@@ -103,12 +189,39 @@
   interface FormState {
     state: any
   }
+
+  interface formFacility {
+    type: string
+    name: string
+    status: string
+    capacity: number
+    contact: string
+    telephone: string
+    operation: string
+  }
+
   const formState = reactive<FormState>({
     state: null,
   })
 
+  const formFacility = reactive<formFacility>({
+    type: '',
+    name: '',
+    status: 'open',
+    capacity: 0,
+    contact: '',
+    telephone: '',
+    operation: '',
+  })
+
+  let addFacilityModalVisible = ref(false)
+  let editFacilityModalVisible = ref(false)
+
   // the number of each type
   let typeNum: any = []
+
+  // the id of the facility which is going to be edited
+  let editFacilityId: number = 0
 
   // customCellRuleFunction
   const customCellRuleFunction = (typeNum: any) => {
@@ -195,7 +308,7 @@
 
   const initFacilityList = async () => {
     data.value.splice(0, data.value.length)
-    await getFacilityList().then((res) => {
+    await getFacilityListApi().then((res) => {
       for (let i = 0; i < res.length; i++) {
         data.value.push({
           key: res[i].id,
@@ -203,8 +316,8 @@
           name: res[i].name,
           status: res[i].status,
           capacity: res[i].capacity,
-          contact: res[i].contact,
-          telephone: res[i].telephone,
+          contact: 'manager' + (i + 1).toString(),
+          telephone: '1883301852' + i.toString(),
         })
       }
       // sort by type
@@ -220,7 +333,7 @@
     await initFacilityList()
   })
 
-  // add facility
+  // add facility; open modal
   const addFacility = async () => {
     if (!(await permissionVerify())) {
       notification.error({
@@ -229,11 +342,25 @@
       })
       return
     }
-    console.log('add facility')
+    addFacilityModalVisible.value = true
+  }
+
+  // add facility; submit
+  const addFacilityAction = async () => {
+    await addFacilityApi(formFacility)
+    await initFacilityList()
+    addFacilityModalVisible.value = false
+    // clear form
+    formFacility.type = ''
+    formFacility.name = ''
+    formFacility.status = 'open'
+    formFacility.capacity = 0
+    formFacility.contact = ''
+    formFacility.telephone = ''
   }
 
   // edit facility
-  const editFacility = async () => {
+  const editFacility = async (facility: any) => {
     if (!(await permissionVerify())) {
       notification.error({
         message: t('sys.api.errorTip'),
@@ -241,7 +368,30 @@
       })
       return
     }
-    console.log('edit facility')
+    editFacilityId = facility.key
+    formFacility.type = facility.type
+    formFacility.name = facility.name
+    formFacility.status = facility.status
+    formFacility.capacity = facility.capacity
+    formFacility.contact = facility.contact
+    formFacility.telephone = facility.telephone
+    editFacilityModalVisible.value = true
+  }
+
+  // edit facility; submit
+  const editFacilityAction = async () => {
+    await editFacilityApi(editFacilityId, formFacility)
+    await initFacilityList()
+    editFacilityModalVisible.value = false
+    // make sure editFacilityId is 0
+    editFacilityId = 0
+    // clear form
+    formFacility.type = ''
+    formFacility.name = ''
+    formFacility.status = 'open'
+    formFacility.capacity = 0
+    formFacility.contact = ''
+    formFacility.telephone = ''
   }
 
   // delete facility
@@ -253,7 +403,12 @@
       })
       return
     }
-    console.log('delete facility')
+  }
+
+  // delete facility; action
+  const deleteFacilityAction = async (id: number) => {
+    await deleteFacilityApi(id)
+    await initFacilityList()
   }
 
   // reset form

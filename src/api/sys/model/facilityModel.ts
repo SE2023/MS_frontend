@@ -11,3 +11,12 @@ export interface FacilityResultModel {
   telephone: string
   free: number
 }
+
+export interface FacilityModel {
+  type: string
+  name: string
+  status: string
+  capacity: number
+  contact: string
+  telephone: string
+}
