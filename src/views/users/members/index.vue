@@ -22,8 +22,8 @@
         </FormItem>
       </Form>
       <div class="bar-buttons">
-        <Button>Reset</Button>
-        <Button type="primary">Filter</Button>
+        <Button @click="resetFilterOptions">Reset</Button>
+        <Button type="primary" @click="filter">Filter</Button>
       </div>
     </div>
     <div
@@ -36,7 +36,7 @@
         display: flex;
       "
     >
-      <Table style="width: 100%" :columns="columns" :data-source="data" bordered>
+      <Table style="width: 100%" :columns="columns" :data-source="dataToShow" bordered>
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'status'">
             <Tag v-if="text === 'open'" color="success">
@@ -116,6 +116,7 @@
   import { getUserListByRole } from '/@/api/sys/user'
   import { permissionVerifyUser } from '/@/utils/auth'
   import { notification } from 'ant-design-vue/es'
+  import { timestampToTime } from "/@/utils/dateUtil";
 
   interface FormState {
     name: string
@@ -175,6 +176,8 @@
 
   let data: any = ref([])
 
+  let dataToShow: any = ref([])
+
   onMounted(async () => {
     const res = await getUserListByRole('members')
     console.log(res)
@@ -188,6 +191,10 @@
         accountBalance: '¥450',
         discount: '×0.8 (Before 2021-01-31)',
       })
+    }
+    dataToShow.value.splice(0, dataToShow.value.length)
+    for (let i = 0; i < data.value.length; i++) {
+      dataToShow.value.push(data.value[i])
     }
   })
 
@@ -222,6 +229,47 @@
       return
     }
     alert('delete')
+  }
+
+  const resetFilterOptions = () => {
+    formState.name = ''
+    formState.email = ''
+    formState.joinDate = null
+
+    dataToShow.value.splice(0, dataToShow.value.length)
+    for (let i = 0; i < data.value.length; i++) {
+      dataToShow.value.push(data.value[i])
+    }
+  }
+
+  const filter = () => {
+    dataToShow.value.splice(0, dataToShow.value.length)
+    for (let i = 0; i < data.value.length; i++) {
+      dataToShow.value.push(data.value[i])
+    }
+    let joinDate = timestampToTime(formState.joinDate)
+    for (let i = 0; i < dataToShow.value.length; i++) {
+      if (formState.name !== '') {
+        if (dataToShow.value[i].name !== formState.name) {
+          dataToShow.value.splice(i, 1)
+          i--
+          continue
+        }
+      }
+      if (formState.email !== '') {
+        if (dataToShow.value[i].email !== formState.email) {
+          dataToShow.value.splice(i, 1)
+          i--
+          continue
+        }
+      }
+      if (formState.joinDate !== null) {
+        if (dataToShow.value[i].registerDate !== joinDate) {
+          dataToShow.value.splice(i, 1)
+          i--
+        }
+      }
+    }
   }
 </script>
 
