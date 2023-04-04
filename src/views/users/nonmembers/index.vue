@@ -18,15 +18,7 @@
           <Input v-model:value="formState.email" placeholder="Please input" />
         </FormItem>
         <FormItem label="Join Date" name="joinDate" style="margin-bottom: 15px">
-<!--          <Select-->
-<!--            v-model:value="formState.joinDate"-->
-<!--            placeholder="Please select"-->
-<!--            style="width: 200px"-->
-<!--          >-->
-<!--            <Select.Option value="1">1</Select.Option>-->
-<!--            <Select.Option value="2">2</Select.Option>-->
-<!--          </Select>-->
-          <DatePicker v-model:value="formState.joinDate" format="YYYY-MM-DD"></DatePicker>
+          <DatePicker v-model:value="formState.joinDate" />
         </FormItem>
       </Form>
       <div class="bar-buttons">
@@ -45,7 +37,7 @@
       "
     >
       <Table style="width: 100%" :columns="columns" :data-source="dataToShow" bordered>
-        <template #bodyCell="{ column, text }">
+        <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'status'">
             <Tag v-if="text === 'open'" color="success">
               {{ text }}
@@ -55,7 +47,7 @@
             </Tag>
           </template>
           <template v-if="column.key === 'operation'">
-            <Tooltip>
+            <Tooltip @click="topUp(record)">
               <template #title>
                 <span>Top up</span>
               </template>
@@ -71,7 +63,7 @@
               "
               >|</span
             >
-            <Tooltip>
+            <Tooltip @click="editUser(record)">
               <template #title>
                 <span>Edit</span>
               </template>
@@ -87,7 +79,7 @@
               "
               >|</span
             >
-            <Tooltip>
+            <Tooltip @click="deleteUser(record)">
               <template #title>
                 <span>Delete</span>
               </template>
@@ -121,6 +113,8 @@
 
   import { getUserListByRole } from '/@/api/sys/user'
   import { timestampToTime } from '/@/utils/dateUtil'
+  import { permissionVerifyUser } from '/@/utils/auth/index'
+  import { notification } from "ant-design-vue/es";
 
   interface FormState {
     name: string
@@ -223,6 +217,41 @@
         }
       }
     }
+  }
+
+  const topUp = async (user: any) => {
+    if (!(await permissionVerifyUser(user.name))) {
+      notification.error({
+        message: 'Error Tip',
+        description: "You don't have permission to top up yourself.",
+      })
+      return
+    }
+    alert('top up')
+  }
+
+  const editUser = async (user: any) => {
+    console.log(user)
+    if (!(await permissionVerifyUser(user.name))) {
+      notification.error({
+        message: 'Error Tip',
+        description: "You don't have permission to edit yourself.",
+      })
+      return
+    }
+    alert('edit user')
+  }
+
+  const deleteUser = async (user: any) => {
+    console.log(user)
+    if (!(await permissionVerifyUser(user.name))) {
+      notification.error({
+        message: 'Error Tip',
+        description: "You don't have permission to delete yourself.",
+      })
+      return
+    }
+    alert('delete user')
   }
 </script>
 

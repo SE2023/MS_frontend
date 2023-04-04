@@ -31,3 +31,11 @@ export async function permissionVerify() {
   const userInfo = await getUserInfo()
   return userInfo.roles[0].value === 'Manager'
 }
+
+// permission to operate users
+export async function permissionVerifyUser(name: string) {
+  const userInfo = await getUserInfo()
+  console.log(userInfo.username)
+  // can not operate yourself
+  return userInfo.username !== name
+}

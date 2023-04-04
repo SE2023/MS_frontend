@@ -18,14 +18,7 @@
           <Input v-model:value="formState.email" placeholder="Please input" />
         </FormItem>
         <FormItem label="Join Date" name="joinDate" style="margin-bottom: 15px">
-          <Select
-            v-model:value="formState.joinDate"
-            placeholder="Please select"
-            style="width: 200px"
-          >
-            <Select.Option value="1">1</Select.Option>
-            <Select.Option value="2">2</Select.Option>
-          </Select>
+          <DatePicker v-model:value="formState.joinDate" />
         </FormItem>
       </Form>
       <div class="bar-buttons">
@@ -44,7 +37,7 @@
       "
     >
       <Table style="width: 100%" :columns="columns" :data-source="data" bordered>
-        <template #bodyCell="{ column, text }">
+        <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'status'">
             <Tag v-if="text === 'open'" color="success">
               {{ text }}
@@ -57,7 +50,7 @@
             <Button type="primary" size="small">Bookings</Button>
           </template>
           <template v-if="column.key === 'operation'">
-            <Tooltip>
+            <Tooltip @click="topUp(record)">
               <template #title>
                 <span>Top up</span>
               </template>
@@ -73,7 +66,7 @@
               "
               >|</span
             >
-            <Tooltip>
+            <Tooltip @click="editUser(record)">
               <template #title>
                 <span>Edit</span>
               </template>
@@ -89,7 +82,7 @@
               "
               >|</span
             >
-            <Tooltip>
+            <Tooltip @click="deleteUser(record)">
               <template #title>
                 <span>Delete</span>
               </template>
@@ -118,9 +111,11 @@
 
 <script lang="ts" setup>
   import { onMounted, reactive, ref } from 'vue'
-  import { Form, FormItem, Input, Select, Button, Table, Tooltip, Tag } from 'ant-design-vue'
+  import { Form, FormItem, Input, DatePicker, Button, Table, Tooltip, Tag } from 'ant-design-vue'
   import { FormOutlined, DeleteOutlined, MoneyCollectOutlined } from '@ant-design/icons-vue'
   import { getUserListByRole } from '/@/api/sys/user'
+  import { permissionVerifyUser } from '/@/utils/auth'
+  import { notification } from 'ant-design-vue/es'
 
   interface FormState {
     name: string
@@ -178,36 +173,6 @@
     },
   ]
 
-  // const data = [
-  //   {
-  //     key: '1',
-  //     name: 'San Zhang',
-  //     email: '12345678901',
-  //     registerDate: '2021-01-01',
-  //     joinDate: '2021-01-01',
-  //     accountBalance: '500',
-  //     discount: '×0.8 (Before 2021-01-31)',
-  //   },
-  //   {
-  //     key: '2',
-  //     name: 'Si Li',
-  //     email: '12345678901',
-  //     registerDate: '2021-01-01',
-  //     joinDate: '2021-01-01',
-  //     accountBalance: '500',
-  //     discount: '×0.8 (Before 2021-01-31)',
-  //   },
-  //   {
-  //     key: '3',
-  //     name: 'Wu Wang',
-  //     email: '12345678901',
-  //     registerDate: '2021-01-01',
-  //     joinDate: '2021-01-01',
-  //     accountBalance: '500',
-  //     discount: '×0.8 (Before 2021-01-31)',
-  //   },
-  // ]
-
   let data: any = ref([])
 
   onMounted(async () => {
@@ -225,6 +190,39 @@
       })
     }
   })
+
+  const topUp = async (user: any) => {
+    if (!(await permissionVerifyUser(user.name))) {
+      notification.error({
+        message: 'Error Tip',
+        description: "You don't have permission to top up yourself.",
+      })
+      return
+    }
+    alert('top up')
+  }
+
+  const editUser = async (user: any) => {
+    if (!(await permissionVerifyUser(user.name))) {
+      notification.error({
+        message: 'Error Tip',
+        description: "You don't have permission to edit yourself.",
+      })
+      return
+    }
+    alert('edit')
+  }
+
+  const deleteUser = async (user: any) => {
+    if (!(await permissionVerifyUser(user.name))) {
+      notification.error({
+        message: 'Error Tip',
+        description: "You don't have permission to delete yourself.",
+      })
+      return
+    }
+    alert('delete')
+  }
 </script>
 
 <style scoped>
