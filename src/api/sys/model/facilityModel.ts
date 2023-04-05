@@ -4,7 +4,6 @@
 export interface FacilityResultModel {
   id: number
   name: string
-  capacity: number
   status: string
   type: string
   contact: string
@@ -16,7 +15,6 @@ export interface FacilityModel {
   type: string
   name: string
   status: string
-  capacity: number
   contact: string
   telephone: string
 }

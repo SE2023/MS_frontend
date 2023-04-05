@@ -63,28 +63,19 @@
               "
               >|</span
             >
-            <Tooltip @click="editUser(record)">
-              <template #title>
-                <span>Edit</span>
-              </template>
-              <FormOutlined style="color: rgb(49, 100, 185)" class="operation-buttons" />
-            </Tooltip>
-            <span
-              style="
-                margin-left: 10px;
-                margin-right: 10px;
-                position: relative;
-                bottom: 2px;
-                color: rgba(217, 217, 217, 0.5);
-              "
-              >|</span
+            <Popconfirm
+              title="Sure to delete?"
+              ok-text="Yes"
+              cancel-text="No"
+              @confirm="deleteUserAction(record)"
             >
-            <Tooltip @click="deleteUser(record)">
-              <template #title>
-                <span>Delete</span>
-              </template>
-              <DeleteOutlined style="color: rgb(221, 118, 115)" class="operation-buttons" />
-            </Tooltip>
+              <Tooltip @click="deleteUser(record)">
+                <template #title>
+                  <span>Delete</span>
+                </template>
+                <DeleteOutlined style="color: rgb(221, 118, 115)" class="operation-buttons" />
+              </Tooltip>
+            </Popconfirm>
           </template>
         </template>
         <template #title>
@@ -103,18 +94,48 @@
         </template>
       </Table>
     </div>
+
+    <!--  top up  -->
+    <BasicModal title="Top Up" v-model:visible="topUpModalVisible" @ok="topUpAction">
+      <Form>
+        <FormItem label="Amount" name="amount">
+          <InputNumber
+            v-model:value="topUpAmount"
+            prefix="$"
+            placeholder="Please input the amount."
+            defaultValue="100"
+            min="10"
+            max="2000"
+            style="width: 100%"
+          />
+        </FormItem>
+      </Form>
+    </BasicModal>
   </div>
 </template>
 
 <script lang="ts" setup>
   import { reactive, onMounted, ref } from 'vue'
-  import { Form, FormItem, Input, Button, Table, Tooltip, Tag, DatePicker } from 'ant-design-vue'
-  import { FormOutlined, DeleteOutlined, MoneyCollectOutlined } from '@ant-design/icons-vue'
+  import {
+    Form,
+    FormItem,
+    Input,
+    Button,
+    Table,
+    Tooltip,
+    Tag,
+    DatePicker,
+    notification,
+    Popconfirm,
+    InputNumber,
+  } from 'ant-design-vue'
+  import { DeleteOutlined, MoneyCollectOutlined } from '@ant-design/icons-vue'
 
-  import { getUserListByRole } from '/@/api/sys/user'
+  import { getUserListByRole, deleteUserApi, setMembershipApi } from '/@/api/sys/user'
   import { timestampToTime } from '/@/utils/dateUtil'
   import { permissionVerifyUser } from '/@/utils/auth/index'
-  import { notification } from "ant-design-vue/es";
+  import BasicModal from '/@/components/Modal/src/BasicModal.vue'
+  import { SetMembershipParams } from '/@/api/sys/model/userModel'
 
   interface FormState {
     name: string
@@ -144,11 +165,6 @@
       align: 'center',
     },
     {
-      title: 'Discount',
-      dataIndex: 'discount',
-      align: 'center',
-    },
-    {
       title: 'Operation',
       key: 'operation',
       dataIndex: 'operation',
@@ -160,22 +176,32 @@
 
   let dataToShow: any = ref([])
 
-  onMounted(async () => {
+  const topUpModalVisible = ref(false)
+
+  const topUpAmount = ref(100)
+
+  let topUpUserId: any = ref(0)
+
+  const getUserList = async () => {
+    data.value.splice(0, data.value.length)
+    dataToShow.value.splice(0, dataToShow.value.length)
     const res = await getUserListByRole('nonmembers')
     console.log(res)
     for (let i = 0; i < res.length; i++) {
       data.value.push({
-        key: i + 1,
+        key: res[i].id,
         name: res[i].username,
         email: res[i].email,
         registerDate: '2023-03-06',
-        discount: '×1',
       })
     }
-    dataToShow.value.splice(0, dataToShow.value.length)
     for (let i = 0; i < data.value.length; i++) {
       dataToShow.value.push(data.value[i])
     }
+  }
+
+  onMounted(async () => {
+    await getUserList()
   })
 
   const resetFilterOptions = () => {
@@ -227,23 +253,30 @@
       })
       return
     }
-    alert('top up')
+    topUpUserId.value = user.key
+    topUpModalVisible.value = true
   }
 
-  const editUser = async (user: any) => {
-    console.log(user)
-    if (!(await permissionVerifyUser(user.name))) {
-      notification.error({
-        message: 'Error Tip',
-        description: "You don't have permission to edit yourself.",
-      })
-      return
+  const topUpAction = async () => {
+    topUpModalVisible.value = false
+    let params: SetMembershipParams = {
+      id: topUpUserId.value,
+      balance: topUpAmount.value,
     }
-    alert('edit user')
+    const res = await setMembershipApi(params)
+    if (res) {
+      notification.success({
+        message: 'Success Tip',
+        description: 'Top up successfully.',
+      })
+      await getUserList()
+    }
+    topUpModalVisible.value = false
+    topUpUserId.value = 0
+    topUpAmount.value = 100
   }
 
   const deleteUser = async (user: any) => {
-    console.log(user)
     if (!(await permissionVerifyUser(user.name))) {
       notification.error({
         message: 'Error Tip',
@@ -251,7 +284,16 @@
       })
       return
     }
-    alert('delete user')
+  }
+
+  const deleteUserAction = async (user: any) => {
+    await deleteUserApi(user.name)
+    // refresh the table
+    await getUserList()
+    notification.success({
+      message: 'Success Tip',
+      description: 'Delete user successfully.',
+    })
   }
 </script>
 
