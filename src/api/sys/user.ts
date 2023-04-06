@@ -1,5 +1,12 @@
 import { defHttp } from '/@/utils/http/axios'
-import { LoginParams, RegisterParams, LoginResultModel, GetUserInfoModel, TopUpParams, SetMembershipParams } from './model/userModel'
+import {
+  LoginParams,
+  RegisterParams,
+  LoginResultModel,
+  GetUserInfoModel,
+  TopUpParams,
+  SetMembershipParams,
+} from './model/userModel'
 
 import { ErrorMessageMode } from '/#/axios'
 
@@ -119,6 +126,12 @@ export function getSMSCode() {
 export function getUserListByRole(role: String) {
   return defHttp.get({
     url: Api.GetUserInfo + '/' + role,
+  })
+}
+
+export function getMembershipList() {
+  return defHttp.get({
+    url: Api.Membership,
   })
 }
 

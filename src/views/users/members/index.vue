@@ -145,7 +145,7 @@
     InputNumber,
   } from 'ant-design-vue'
   import { FormOutlined, DeleteOutlined, MoneyCollectOutlined } from '@ant-design/icons-vue'
-  import { getUserListByRole, deleteUserApi, topUpApi } from '/@/api/sys/user'
+  import { getUserListByRole, deleteUserApi, topUpApi, getMembershipList } from '/@/api/sys/user'
   import { permissionVerifyUser } from '/@/utils/auth'
   import { notification } from 'ant-design-vue/es'
 
@@ -176,13 +176,13 @@
       align: 'center',
     },
     {
-      title: 'Register Date',
-      dataIndex: 'registerDate',
+      title: 'Join Date',
+      dataIndex: 'joinDate',
       align: 'center',
     },
     {
-      title: 'Join Date',
-      dataIndex: 'joinDate',
+      title: 'Expire Date',
+      dataIndex: 'expireDate',
       align: 'center',
     },
     {
@@ -215,16 +215,16 @@
   const getUserList = async () => {
     data.value.splice(0, data.value.length)
     dataToShow.value.splice(0, dataToShow.value.length)
-    const res = await getUserListByRole('members')
-    console.log(res)
-    for (let i = 0; i < res.length; i++) {
+    const res1 = await getUserListByRole('members')
+    const res2 = await getMembershipList()
+    for (let i = 0; i < res2.length; i++) {
       data.value.push({
-        key: res[i].id,
-        name: res[i].username,
-        email: res[i].email,
-        registerDate: '2023-03-06',
-        joinDate: '2023-03-06',
-        accountBalance: res[i].balance,
+        key: res1[i].id,
+        name: res1[i].username,
+        email: res1[i].email,
+        joinDate: res2.create_time,
+        expireDate: res2.expire_time,
+        accountBalance: res2[i].balance,
         discount: '×0.8',
       })
     }
