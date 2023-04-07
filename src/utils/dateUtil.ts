@@ -31,4 +31,16 @@ export function timestampToTime(time) {
   return y + '-' + m + '-' + d
 }
 
+// 中国标准时间 转换成 时分秒
+export function timestampToTime2(time) {
+  const date = new Date(time)
+  let h: string | number = date.getHours()
+  h = h < 10 ? '0' + h : h
+  let m: string | number = date.getMinutes()
+  m = m < 10 ? '0' + m : m
+  let s: string | number = date.getSeconds()
+  s = s < 10 ? '0' + s : s
+  return h + ':' + m + ':' + s
+}
+
 export const dateUtil = dayjs

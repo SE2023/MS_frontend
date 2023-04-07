@@ -63,22 +63,6 @@
               "
               >|</span
             >
-            <Tooltip @click="editUser(record)">
-              <template #title>
-                <span>Edit</span>
-              </template>
-              <FormOutlined style="color: rgb(49, 100, 185)" class="operation-buttons" />
-            </Tooltip>
-            <span
-              style="
-                margin-left: 10px;
-                margin-right: 10px;
-                position: relative;
-                bottom: 2px;
-                color: rgba(217, 217, 217, 0.5);
-              "
-              >|</span
-            >
             <Popconfirm
               title="Sure to delete?"
               ok-text="Yes"
@@ -144,7 +128,7 @@
     Popconfirm,
     InputNumber,
   } from 'ant-design-vue'
-  import { FormOutlined, DeleteOutlined, MoneyCollectOutlined } from '@ant-design/icons-vue'
+  import { DeleteOutlined, MoneyCollectOutlined } from '@ant-design/icons-vue'
   import { getUserListByRole, deleteUserApi, topUpApi, getMembershipList } from '/@/api/sys/user'
   import { permissionVerifyUser } from '/@/utils/auth'
   import { notification } from 'ant-design-vue/es'
@@ -222,8 +206,8 @@
         key: res1[i].id,
         name: res1[i].username,
         email: res1[i].email,
-        joinDate: res2.create_time,
-        expireDate: res2.expire_time,
+        joinDate: res2[i].create_time,
+        expireDate: res2[i].expire_time,
         accountBalance: res2[i].balance,
         discount: '×0.8',
       })
@@ -265,17 +249,6 @@
     topUpModalVisible.value = false
     topUpUserID.value = 0
     topUpAmount.value = 100
-  }
-
-  const editUser = async (user: any) => {
-    if (!(await permissionVerifyUser(user.name))) {
-      notification.error({
-        message: 'Error Tip',
-        description: "You don't have permission to edit yourself.",
-      })
-      return
-    }
-    alert('edit')
   }
 
   const deleteUser = async (user: any) => {

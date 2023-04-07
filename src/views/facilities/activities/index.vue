@@ -38,6 +38,7 @@
         :data-source="dataToShow"
         :pagination="{ pageSize: 50 }"
         :scroll="{ x: 1600, y: 480 }"
+        bordered
       >
         <template #bodyCell="{ column, text }">
           <template v-if="column.dataIndex === 'status'">
@@ -49,17 +50,106 @@
             </Tag>
           </template>
         </template>
+        <template #title>
+          <div style="display: flex">
+            <span
+              style="
+                margin-right: 10px;
+                font-weight: bold;
+                font-size: 15px;
+                position: relative;
+                top: 4px;
+              "
+              >Activities</span
+            >
+            <Button type="primary" style="margin-left: auto" @click="addActivity">Add</Button>
+          </div>
+        </template>
       </Table>
     </div>
+
+    <!--  add an activity  -->
+    <BasicModal
+      title="Add An Activity"
+      v-model:visible="addActivityModalVisible"
+      @ok="addActivityAction"
+    >
+      <Form :model="formActivity" :label-col="{ span: 5 }">
+        <FormItem label="Activity" name="name" :rules="[{ required: true }]">
+          <Input v-model:value="formActivity.name" />
+        </FormItem>
+        <FormItem label="Facility" name="facility" :rules="[{ required: true }]">
+          <Select v-model:value="formActivity.facility" :options="facilityList" />
+        </FormItem>
+        <FormItem label="Price" name="price" :rules="[{ required: true }]">
+          <InputNumber
+            v-model:value="formActivity.price"
+            prefix="$"
+            defaultValue="10"
+            min="1"
+            max="100"
+            :precision="1"
+            :step="0.1"
+            style="width: 100%"
+          />
+        </FormItem>
+        <FormItem label="Status" name="status" :rules="[{ required: true }]">
+          <Select v-model:value="formActivity.status" placeholder="Please select">
+            <Select.Option value="open">open</Select.Option>
+            <Select.Option value="close">close</Select.Option>
+          </Select>
+        </FormItem>
+        <FormItem label="Capacity" name="capacity" :rules="[{ required: true }]">
+          <InputNumber
+            v-model:value="formActivity.capacity"
+            defaultValue="10"
+            min="2"
+            max="50"
+            :precision="0"
+            :step="1"
+            style="width: 100%"
+          />
+        </FormItem>
+        <FormItem label="Date" name="date" :rules="[{ required: true }]">
+          <DatePicker v-model:value="formActivity.date" />
+        </FormItem>
+        <FormItem label="Time" name="time" :rules="[{ required: true }]">
+          <RangePicker v-model:value="formActivity.time" picker="time" />
+        </FormItem>
+        <FormItem label="Note" name="note">
+          <Textarea v-model:value="formActivity.note" />
+        </FormItem>
+      </Form>
+    </BasicModal>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { Button, Table, Tag, Form, FormItem, Input, DatePicker } from 'ant-design-vue'
+  import {
+    Button,
+    Table,
+    Tag,
+    Form,
+    FormItem,
+    Input,
+    InputNumber,
+    DatePicker,
+    notification,
+    Select,
+    RangePicker,
+    Textarea,
+  } from 'ant-design-vue'
   import { onMounted, reactive, ref } from 'vue'
 
-  import { getActivityListWithTimeApi } from '/@/api/sys/activity'
-  import { timestampToTime } from "/@/utils/dateUtil";
+  import { getActivityListWithTimeApi, createTimeUnityApi, createActivityApi } from '/@/api/sys/activity'
+  import { getFacilityListApi } from '/@/api/sys/facility'
+  import { timestampToTime, timestampToTime2 } from '/@/utils/dateUtil'
+  import { permissionVerify } from '/@/utils/auth'
+
+  import { useI18n } from '/@/hooks/web/useI18n'
+  import BasicModal from '/@/components/Modal/src/BasicModal.vue'
+  import { ActivityModel } from '/@/api/sys/model/activityModel'
+  const { t } = useI18n()
 
   interface FormState {
     facility: string
@@ -128,6 +218,21 @@
     },
   ]
 
+  const addActivityModalVisible = ref(false)
+
+  const facilityList: any = ref([])
+
+  const formActivity = reactive({
+    name: '',
+    facility: '',
+    price: 1,
+    status: '',
+    capacity: 2,
+    date: '',
+    time: [],
+    note: '',
+  })
+
   const data: any = ref([])
 
   const dataToShow: any = ref([])
@@ -167,20 +272,65 @@
     }
   }
 
+  const getFacilityList = async () => {
+    const res = await getFacilityListApi()
+    for (let i = 0; i < res.length; i++) {
+      facilityList.value.push({
+        label: res[i].name,
+        value: res[i].id,
+      })
+    }
+    console.log(facilityList.value)
+  }
+
   onMounted(async () => {
     await getActivityList()
+    await getFacilityList()
   })
 
   // add activity
-  // const addActivity = async () => {
-  //   if (!(await permissionVerify())) {
-  //     notification.error({
-  //       message: t('sys.api.errorTip'),
-  //       description: t('sys.api.permissionError'),
-  //     })
-  //     return
-  //   }
-  // }
+  const addActivity = async () => {
+    if (!(await permissionVerify())) {
+      notification.error({
+        message: t('sys.api.errorTip'),
+        description: t('sys.api.permissionError'),
+      })
+      return
+    }
+    addActivityModalVisible.value = true
+  }
+
+  const addActivityAction = async () => {
+    const timeUnityParams = {
+      date: timestampToTime(formActivity.date),
+      startTime: timestampToTime2(formActivity.time[0]).substring(0, 5),
+      endTime: timestampToTime2(formActivity.time[1]).substring(0, 5),
+    }
+    const timeUnityId = await createTimeUnityApi(timeUnityParams)
+    const activityParams: ActivityModel = {
+      name: formActivity.name,
+      facilityId: parseInt(formActivity.facility),
+      price: '$' + formActivity.price.toString(),
+      note: formActivity.note,
+      userAmount: 0,
+      status: formActivity.status,
+      capacity: formActivity.capacity,
+    }
+    const res = await createActivityApi(timeUnityId, activityParams)
+    if (res) {
+      notification.success({
+        message: 'Success Tip',
+        description: 'Add activity successfully!',
+      })
+      addActivityModalVisible.value = false
+      await getActivityList()
+    } else {
+      notification.error({
+        message: 'Error Tip',
+        description: 'Add activity failed!',
+      })
+    }
+  }
 
   // edit activity
   // const editActivity = async () => {
@@ -233,17 +383,6 @@
           dataToShow.value[i].date.split('-')[1] - 1,
           dataToShow.value[i].date.split('-')[2],
         )
-        // console.log('-----')
-        // console.log(
-        //   dataToShow.value[i].date.split('-')[0] +
-        //     ', ' +
-        //     dataToShow.value[i].date.split('-')[1] +
-        //     ', ' +
-        //     dataToShow.value[i].date.split('-')[2],
-        // )
-        // console.log(dateTmp)
-        // console.log(timestampToTime(dateTmp))
-        // console.log(date)
         if (timestampToTime(dateTmp) !== date) {
           dataToShow.value.splice(i, 1)
           i--
