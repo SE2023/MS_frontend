@@ -40,7 +40,7 @@
         :scroll="{ x: 1600, y: 480 }"
         bordered
       >
-        <template #bodyCell="{ column, text }">
+        <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'status'">
             <Tag v-if="text === 'open'" color="success">
               {{ text }}
@@ -48,6 +48,21 @@
             <Tag v-else color="error">
               {{ text }}
             </Tag>
+          </template>
+          <template v-if="column.dataIndex === 'operation'">
+            <Popconfirm
+              title="Sure to delete?"
+              ok-text="Yes"
+              cancel-text="No"
+              @confirm="deleteActivityAction(record)"
+            >
+              <Tooltip @click="deleteActivity">
+                <template #title>
+                  <span>Delete</span>
+                </template>
+                <DeleteOutlined style="color: rgb(221, 118, 115)" class="operation-buttons" />
+              </Tooltip>
+            </Popconfirm>
           </template>
         </template>
         <template #title>
@@ -138,10 +153,17 @@
     Select,
     RangePicker,
     Textarea,
+    Tooltip,
+    Popconfirm,
   } from 'ant-design-vue'
+  import { DeleteOutlined } from '@ant-design/icons-vue'
   import { onMounted, reactive, ref } from 'vue'
 
-  import { getActivityListWithTimeApi, createTimeUnityApi, createActivityApi } from '/@/api/sys/activity'
+  import {
+    getActivityListWithTimeApi,
+    createTimeUnityApi,
+    createActivityApi,
+  } from '/@/api/sys/activity'
   import { getFacilityListApi } from '/@/api/sys/facility'
   import { timestampToTime, timestampToTime2 } from '/@/utils/dateUtil'
   import { permissionVerify } from '/@/utils/auth'
@@ -344,15 +366,19 @@
   // }
 
   // delete activity
-  // const deleteActivity = async () => {
-  //   if (!(await permissionVerify())) {
-  //     notification.error({
-  //       message: t('sys.api.errorTip'),
-  //       description: t('sys.api.permissionError'),
-  //     })
-  //     return
-  //   }
-  // }
+  const deleteActivity = async () => {
+    if (!(await permissionVerify())) {
+      notification.error({
+        message: t('sys.api.errorTip'),
+        description: t('sys.api.permissionError'),
+      })
+      return
+    }
+  }
+
+  const deleteActivityAction = async (activity: any) => {
+    console.log(activity)
+  }
 
   const resetFilterOptions = async () => {
     formState.facility = ''

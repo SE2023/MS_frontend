@@ -208,7 +208,7 @@
         email: res1[i].email,
         joinDate: res2[i].create_time,
         expireDate: res2[i].expire_time,
-        accountBalance: res2[i].balance,
+        accountBalance: '¥' + res2[i].balance,
         discount: '×0.8',
       })
     }
