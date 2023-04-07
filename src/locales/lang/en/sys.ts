@@ -24,7 +24,7 @@ export default {
     errMsg505: 'The http version does not support the request!',
   },
   app: {
-    logoutTip: 'Reminder',
+    Tip: 'Reminder',
     logoutMessage: 'Confirm to exit the system?',
     menuLoading: 'Menu loading...',
   },

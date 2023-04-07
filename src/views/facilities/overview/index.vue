@@ -112,9 +112,6 @@
             <Select.Option value="close">close</Select.Option>
           </Select>
         </FormItem>
-        <FormItem label="Capacity" name="capacity" :rules="[{ required: true }]">
-          <Input v-model:value="formFacility.capacity" />
-        </FormItem>
         <FormItem label="Contact" name="contact" :rules="[{ required: true }]">
           <Input v-model:value="formFacility.contact" />
         </FormItem>
@@ -142,9 +139,6 @@
             <Select.Option value="open">open</Select.Option>
             <Select.Option value="close">close</Select.Option>
           </Select>
-        </FormItem>
-        <FormItem label="Capacity" name="capacity" :rules="[{ required: true }]">
-          <Input v-model:value="formFacility.capacity" />
         </FormItem>
         <FormItem label="Contact" name="contact" :rules="[{ required: true }]">
           <Input v-model:value="formFacility.contact" />
@@ -194,7 +188,6 @@
     type: string
     name: string
     status: string
-    capacity: number
     contact: string
     telephone: string
     operation: string
@@ -208,7 +201,6 @@
     type: '',
     name: '',
     status: 'open',
-    capacity: 0,
     contact: '',
     telephone: '',
     operation: '',
@@ -221,7 +213,7 @@
   let typeNum: any = []
 
   // the id of the facility which is going to be edited
-  let editFacilityId: number = 0
+  let editFacilityId = 0
 
   // customCellRuleFunction
   const customCellRuleFunction = (typeNum: any) => {
@@ -254,11 +246,6 @@
     {
       title: 'Status',
       dataIndex: 'status',
-      align: 'center',
-    },
-    {
-      title: 'Capacity',
-      dataIndex: 'capacity',
       align: 'center',
     },
     {
@@ -315,7 +302,6 @@
           type: res[i].type,
           name: res[i].name,
           status: res[i].status,
-          capacity: res[i].capacity,
           contact: 'manager' + (i + 1).toString(),
           telephone: '1883301852' + i.toString(),
         })
@@ -354,7 +340,6 @@
     formFacility.type = ''
     formFacility.name = ''
     formFacility.status = 'open'
-    formFacility.capacity = 0
     formFacility.contact = ''
     formFacility.telephone = ''
   }
@@ -372,7 +357,6 @@
     formFacility.type = facility.type
     formFacility.name = facility.name
     formFacility.status = facility.status
-    formFacility.capacity = facility.capacity
     formFacility.contact = facility.contact
     formFacility.telephone = facility.telephone
     editFacilityModalVisible.value = true
@@ -389,7 +373,6 @@
     formFacility.type = ''
     formFacility.name = ''
     formFacility.status = 'open'
-    formFacility.capacity = 0
     formFacility.contact = ''
     formFacility.telephone = ''
   }
