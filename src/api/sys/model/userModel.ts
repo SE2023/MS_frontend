@@ -12,6 +12,16 @@ export interface RegisterParams {
   confirmCode: string
 }
 
+export interface TopUpParams {
+  id: number
+  recharge: number
+}
+
+export interface SetMembershipParams {
+  id: number
+  balance: number
+}
+
 export interface RoleInfo {
   roleName: string
   value: string

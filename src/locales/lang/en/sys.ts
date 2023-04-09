@@ -1,6 +1,7 @@
 export default {
   api: {
     operationFailed: 'Operation failed',
+    permissionError: "You don't have permission",
     errorTip: 'Error Tip',
     errorMessage: 'The operation failed, the system is abnormal!',
     timeoutMessage: 'Login timed out, please log in again!',
@@ -23,7 +24,7 @@ export default {
     errMsg505: 'The http version does not support the request!',
   },
   app: {
-    logoutTip: 'Reminder',
+    Tip: 'Reminder',
     logoutMessage: 'Confirm to exit the system?',
     menuLoading: 'Menu loading...',
   },
@@ -63,9 +64,9 @@ export default {
     signUpFormTitle: 'Sign up',
     forgetFormTitle: 'Reset password',
 
-    signInTitle: 'Backstage management system',
+    signInTitle: 'BodyBuddy management system',
     signInDesc: 'Enter your personal details and get started!',
-    policy: 'I agree to the xxx Privacy Policy',
+    policy: 'I agree to the BodyBuddy Privacy Policy',
     scanSign: `scanning the code to complete the login`,
 
     loginButton: 'Sign in',
