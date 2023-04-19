@@ -101,7 +101,7 @@
         <FormItem label="Amount" name="amount">
           <InputNumber
             v-model:value="topUpAmount"
-            prefix="$"
+            prefix="¥"
             placeholder="Please input the amount."
             defaultValue="100"
             min="10"

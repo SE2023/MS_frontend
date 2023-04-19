@@ -101,7 +101,7 @@
         <FormItem label="Amount" name="amount">
           <InputNumber
             v-model:value="topUpAmount"
-            prefix="$"
+            prefix="¥"
             placeholder="Please input the amount."
             defaultValue="100"
             min="10"
@@ -133,7 +133,7 @@
 
   import { getUserListByRole, deleteUserApi, setMembershipApi } from '/@/api/sys/user'
   import { timestampToTime } from '/@/utils/dateUtil'
-  import { permissionVerifyUser } from '/@/utils/auth/index'
+  import { permissionVerifyUser } from '/@/utils/auth'
   import BasicModal from '/@/components/Modal/src/BasicModal.vue'
   import { SetMembershipParams } from '/@/api/sys/model/userModel'
 

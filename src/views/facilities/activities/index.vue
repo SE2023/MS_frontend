@@ -99,7 +99,7 @@
         <FormItem label="Price" name="price" :rules="[{ required: true }]">
           <InputNumber
             v-model:value="formActivity.price"
-            prefix="$"
+            prefix="¥"
             defaultValue="10"
             min="1"
             max="100"
@@ -332,7 +332,7 @@
     const activityParams: ActivityModel = {
       name: formActivity.name,
       facilityId: parseInt(formActivity.facility),
-      price: '$' + formActivity.price.toString(),
+      price: '¥' + formActivity.price.toString(),
       note: formActivity.note,
       userAmount: 0,
       status: formActivity.status,
