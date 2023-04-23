@@ -1,6 +1,6 @@
 <template>
-  <PageWrapper title="引导页" content="用于给用户的指引操作">
-    <a-button type="primary" @click="handleStart">开始</a-button>
+  <PageWrapper title="Guide Page" content="An instruction to users.">
+    <a-button type="primary" @click="handleStart">Start</a-button>
   </PageWrapper>
 </template>
 <script lang="ts">
@@ -21,7 +21,13 @@
             steps: [
               {
                 title: 'Welcome',
-                intro: 'Hello World! 👋',
+                intro:
+                  "Hi, there! 👋 \n Let' s firstly have a look at the usage of the sports-booking management system.",
+              },
+              {
+                title: 'LOGO',
+                element: document.querySelector(`.${prefixVar}-layout-menu-logo`)!,
+                intro: 'This is our LOGO.',
               },
               {
                 title: 'Collapse Button',
@@ -32,6 +38,15 @@
                 title: 'User Action',
                 element: document.querySelector(`.${prefixVar}-layout-header-action`)!,
                 intro: 'This is the user function area.',
+              },
+              {
+                title: 'Menu List',
+                element: document.querySelector(`.${prefixVar}-layout-sideBar`)!,
+                intro: 'This is the menu list.',
+              },
+              {
+                title: 'Begin',
+                intro: "Let's start it!",
               },
             ],
           })
