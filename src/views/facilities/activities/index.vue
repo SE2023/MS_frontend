@@ -233,11 +233,6 @@
       dataIndex: 'note',
       align: 'center',
     },
-    {
-      title: 'operation',
-      dataIndex: 'operation',
-      align: 'center',
-    },
   ]
 
   const addActivityModalVisible = ref(false)
@@ -264,6 +259,7 @@
     data.value.splice(0, data.value.length)
     dataToShow.value.splice(0, dataToShow.value.length)
     const activityList = await getActivityListWithTimeApi()
+    console.log('activityList: ', activityList)
     for (let i = 0; i < activityList.length; i++) {
       // 判断date是否为今天之后, date为string类型'yyyy-mm-dd', 需要转换为Date类型
       const date = new Date(
@@ -271,10 +267,12 @@
         activityList[i].date.split('-')[1] - 1,
         activityList[i].date.split('-')[2],
       )
+      console.log('date: ', date)
       const today = new Date()
-      if (date < today) {
-        continue
-      }
+      console.log('today: ', today)
+      // if (date < today) {
+      //   continue
+      // }
       data.value.push({
         activity: activityList[i].name,
         facilityName: activityList[i].facility,
@@ -292,6 +290,8 @@
     for (let i = 0; i < data.value.length; i++) {
       dataToShow.value.push(data.value[i])
     }
+    console.log('data: ', data.value)
+    console.log('dataToShow: ', dataToShow.value)
   }
 
   const getFacilityList = async () => {
