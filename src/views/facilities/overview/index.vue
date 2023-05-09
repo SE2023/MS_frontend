@@ -178,6 +178,7 @@
   import { permissionVerify } from '/@/utils/auth/index'
   import { notification } from 'ant-design-vue/es'
   import { useI18n } from '/@/hooks/web/useI18n'
+  import { FacilityModel } from "/@/api/sys/model/facilityModel";
   const { t } = useI18n()
 
   interface FormState {
@@ -302,8 +303,10 @@
           type: res[i].type,
           name: res[i].name,
           status: res[i].status,
-          contact: 'manager' + (i + 1).toString(),
-          telephone: '1883301852' + i.toString(),
+          // contact: 'manager' + (i + 1).toString(),
+          // telephone: '1883301852' + i.toString(),
+          contact: res[i].manager_name,
+          telephone: res[i].manager_tel,
         })
       }
       // sort by type
@@ -333,7 +336,14 @@
 
   // add facility; submit
   const addFacilityAction = async () => {
-    await addFacilityApi(formFacility)
+    const param = {
+      type: formFacility.type,
+      name: formFacility.name,
+      status: formFacility.status,
+      manager_name: formFacility.contact,
+      manager_tel: formFacility.telephone,
+    }
+    await addFacilityApi(param)
     await initFacilityList()
     addFacilityModalVisible.value = false
     // clear form
